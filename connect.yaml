@@ -1,0 +1,20 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: postgres-connect
+  namespace: confluent
+spec:
+  replicas: 1
+  image:
+    init: confluentinc/confluent-init-container:2.6.0
+    application: cp-server-connect-psql:latest
+  # build:
+  #   type: onDemand                                             --- [2]
+  #   onDemand:
+  #     plugins:
+  #       locationType: confluentHub                             --- [3]
+  #       confluentHub:                                          --- [4]
+  #         - name:                                              --- [5]
+  #           owner:                                             --- [6]
+  #           version:                                           --- [7]
+  #     storageLimit:                                            --- [8]

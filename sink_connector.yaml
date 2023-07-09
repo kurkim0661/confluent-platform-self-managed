@@ -1,0 +1,17 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
+  name: test-connector
+  namespace: confluent
+spec:
+  class: io.confluent.connect.jdbc.JdbcSinkConnector
+  taskMax: 1
+  configs:    
+    connector.class: io.confluent.connect.jdbc.JdbcSinkConnector
+    tasks.max: "1"
+    topics": "tidal_data_test"
+    connection.url: "jdbc:postgresql://postgresql.default.svc.cluster.local:5432/postgres"
+    connection.user": "postgres"
+    connection.password: "y4c9GPpnJT"
+    insert.mode: "insert"
+    table.name.format: "tides_table"
