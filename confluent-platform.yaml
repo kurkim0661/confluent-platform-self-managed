@@ -6,9 +6,15 @@ metadata:
   namespace: confluent
 spec:
   podTemplate:
-    podSecurityContext:
-      runAsUser: 0
-      fsGroup: 0
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - confluent-demo
   replicas: 1
   image:
     application: confluentinc/cp-zookeeper:7.4.0
@@ -21,18 +27,40 @@ kind: Kafka
 metadata:
   name: kafka
   namespace: confluent
+  labels:
+    foo: broker
 spec:
   podTemplate:
-    podSecurityContext:
-      runAsUser: 0
-      fsGroup: 0
-  replicas: 3
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: foo.service
+              operator: In
+              values:
+              - broker
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: foo
+                operator: In
+                values:
+                - broker
+            topologyKey: "kubernetes.io/hostname"
+  replicas: 2
   image:
     application: confluentinc/cp-server:7.4.0
     init: confluentinc/confluent-init-container:2.6.0
   dataVolumeCapacity: 10Gi
   metricReporter:
     enabled: true
+  config:
+    default.replication.factor: 2
+    min.insync.replicas: 1
   dependencies:
     zookeeper:
       endpoint: zookeeper.confluent.svc.cluster.local:2181
@@ -44,17 +72,22 @@ metadata:
   namespace: confluent
 spec:
   podTemplate:
-    podSecurityContext:
-      runAsUser: 0
-      fsGroup: 0
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - confluent-demo
   replicas: 1
   image:
     init: confluentinc/confluent-init-container:2.6.0
-    application: cp-server-connect-psql:latest
+    application: localhost:5000/cp-server-connect-psql
   dependencies:
     kafka:
       bootstrapEndpoint: kafka:9071
----
 # apiVersion: platform.confluent.io/v1beta1
 # kind: Connect
 # metadata:
@@ -80,9 +113,15 @@ metadata:
   namespace: confluent
 spec:
   podTemplate:
-    podSecurityContext:
-      runAsUser: 0
-      fsGroup: 0
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - confluent-demo
   replicas: 1
   image:
     application: confluentinc/cp-ksqldb-server:7.4.0
@@ -96,9 +135,15 @@ metadata:
   namespace: confluent
 spec:
   podTemplate:
-    podSecurityContext:
-      runAsUser: 0
-      fsGroup: 0
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - confluent-demo
   replicas: 1
   image:
     application: confluentinc/cp-enterprise-control-center:7.4.0
@@ -121,9 +166,15 @@ metadata:
   namespace: confluent
 spec:
   podTemplate:
-    podSecurityContext:
-      runAsUser: 0
-      fsGroup: 0
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - confluent-demo
   replicas: 1
   image:
     application: confluentinc/cp-schema-registry:7.4.0
@@ -136,9 +187,15 @@ metadata:
   namespace: confluent
 spec:
   podTemplate:
-    podSecurityContext:
-      runAsUser: 0
-      fsGroup: 0
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - confluent-demo
   replicas: 1
   image:
     application: confluentinc/cp-kafka-rest:7.4.0
