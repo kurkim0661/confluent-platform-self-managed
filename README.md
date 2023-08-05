@@ -1,9 +1,21 @@
+# Install Postgresql using helm
+
+```bash
+helm upgrade --install postgresql ./postgresql
+```
+
+```bash
+kubectl port-forward svc/postgresql 5432:5432 
+```
+
+Postgresql 를 host 에 forwarding 시키고 해당 postgresql database 에 테스트에 사용할 table을 만들어준다.
+
 # minikube cluster 구성
 
 Test 환경이기 때문에 사양은 local 환경에 맞춰서 구성하면 된다.
 
 ```bash
-minikube start --nodes 4 --memory 8GB --cpus 3 -p confluent-demo --insecure-registry='0.0.0.0/0'
+minikube start --nodes 3 --memory 8GB --cpus 3 -p confluent-demo --insecure-registry='0.0.0.0/0'
 ```
 
 affinity 를 활용하기 위해서 node 는 4개로 구성을 하고 docker image 를 활용하기 위해서 insecure-registry 를 적용하여 network 연결 문제를 미리 해결.
@@ -38,26 +50,7 @@ Set your default context namespace confluent
 ```bash
 kubectl label nodes confluent-demo-m02 foo.service=broker
 kubectl label nodes confluent-demo-m03 foo.service=broker
-kubectl label nodes confluent-demo-m04 foo.service=broker
 ```
-
-# confluent-platform 설치하기
-
-```bash
-kubectl apply -f confluent-platform.yaml
-```
-
-
-# Use Confluent Control Center to monitor the Confluent Platform, and see the created topic and data.
-
-Set up port forwarding to Control Center web UI from your local machine:
-
-kubectl port-forward controlcenter-0 9021:9021 -n confluent
-Browse to Control Center:
-
-http://localhost:9021
-
-Check that the elastic-0 topic was created and that messages are being produced to the topic.
 
 # minikube docker registry에 image build하기
 registry add on 설치
@@ -82,3 +75,21 @@ docker tag cp-server-connect-psql:latest localhost:5000/cp-server-connect-psql
 ```bash
 docker push localhost:5000/cp-server-connect-psql
 ```
+
+# confluent-platform 설치하기
+
+```bash
+./run.sh
+```
+
+
+# Use Confluent Control Center to monitor the Confluent Platform, and see the created topic and data.
+
+Set up port forwarding to Control Center web UI from your local machine:
+
+kubectl port-forward controlcenter-0 9021:9021 -n confluent
+Browse to Control Center:
+
+http://localhost:9021
+
+Check that the elastic-0 topic was created and that messages are being produced to the topic.

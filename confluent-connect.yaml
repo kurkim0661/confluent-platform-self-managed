@@ -1,0 +1,31 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: connect
+  namespace: confluent
+spec:
+  configOverrides:
+    server:
+    - auto.create.topics.enable=true
+    - default.replication.factor=2
+    - min.insync.replicas=1
+    - config.storage.replication.factor=2
+    - offset.storage.replication.factor=2
+    - status.storage.replication.factor=2
+  podTemplate:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - confluent-demo
+  replicas: 1
+  image:
+    init: confluentinc/confluent-init-container:2.6.0
+    application: localhost:5000/cp-server-connect-psql
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafka:9071

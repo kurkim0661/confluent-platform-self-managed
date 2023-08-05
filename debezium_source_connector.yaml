@@ -5,32 +5,37 @@ metadata:
   namespace: confluent
 spec:
   class: io.debezium.connector.postgresql.PostgresConnector
-  taskMax: 1
+  taskMax: 2
   configs:
     connector.class: "io.debezium.connector.postgresql.PostgresConnector"
-    tasks.max: 4
-    database.hostname: "probit-dev.c2y52b8rr7m4.ap-northeast-2.rds.amazonaws.com"
-    database.dbname: "trading_web"
-    database.port: 5432
-    database.user: "u_dev1_kafka"
-    database.password: "dnsever01!1"
+    tasks.max: "2"
+    database.hostname: "postgresql.default.svc.cluster.local"
+    database.dbname: "postgres"
+    database.port: "5432"
+    database.user: "postgres"
+    database.password: "0B9JDFxi5E"
     database.config.output.plugin: "pgoutput"
     key.converter: "org.apache.kafka.connect.storage.StringConverter"
-    key.converter.schemas.enable: false
+    key.converter.schemas.enable: "false"
     value.converter: "org.apache.kafka.connect.json.JsonConverter"
-    value.converter.schemas.enable: false
-    table.include.list: "public.security_log_lastlogin,public.trade,public.user,public.wallet_platform_currency,public.market"
-    topic.prefix: "integrate.spot.trading_web"
-    topic.creation.groups: "integrate.spot.trading_web"
-    topic.creation.default.replication.factor: 2,
-    topic.creation.default.partitions: 2,
+    value.converter.schemas.enable: "false"
+    table.include.list: "public.user,public.test"
+    topic.prefix: "integrate"
+    topic.creation.groups: "public"
+    topic.creation.default.replication.factor: "2"
+    topic.creation.default.partitions: "2"
     topic.creation.default.cleanup.policy: "delete"
     topic.creation.default.compression.type: "producer"
-    topic.creation.default.retention.ms: 25920000
-    message.key.columns: "public.security_log_lastlogin:user_id;public.user:id;public.trade:id;public.wallet_platform_currency:wallet_platform,currency;public.market:id;"
+    topic.creation.default.retention.ms: "25920000"
+    topic.creation.public.include: "integrate\\.public\\.*"
+    message.key.columns: "public.user:id;public.test:id"
     plugin.name: "pgoutput"
     transforms: "unwrap"
-    transforms.unwrap.type: "io.debezium.transforms.ExtractNewRecordState",
-    transforms.unwrap.drop.tombstones: false,
+    transforms.unwrap.type: "io.debezium.transforms.ExtractNewRecordState"
+    transforms.unwrap.drop.tombstones: "false"
     transforms.unwrap.delete.handling.mode: "rewrite"
     decimal.handling.mode: "string"
+    snapshot.mode: "initial"
+    slot.name: "debezium_test"
+    publication.name: "dbz_publication_user"
+    publication.autocreate.mode: "filtered"
