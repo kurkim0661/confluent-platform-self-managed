@@ -68,6 +68,7 @@ docker run --rm -it -d --network=host alpine ash -c "apk add socat && socat TCP-
 ```bash
 docker build --tag cp-server-connect-psql:latest .
 docker tag cp-server-connect-psql:latest localhost:5000/cp-server-connect-psql
+docker push localhost:5000/cp-server-connect-psql
 ```
 
 ## Push docker image
